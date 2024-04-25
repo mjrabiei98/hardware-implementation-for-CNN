@@ -146,7 +146,7 @@ BEGIN
         END IF;
     END PROCESS;
 
-    PROCESS (pstate) BEGIN
+    PROCESS (pstate, start) BEGIN
         en_cti <= '0';
         en_ctj <= '0';
         en_ctx <= '0';
@@ -173,7 +173,7 @@ BEGIN
                 END IF;
 
             WHEN adr_gen1 =>
-                nstate <= adr_gen1;
+                nstate <= adr_gen2;
                 adder_mux_1_sel <= "01";
                 adder_mux_2_sel <= "01";
                 adr_reg_mux_sel <= "00";

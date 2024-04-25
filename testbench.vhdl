@@ -31,6 +31,10 @@ BEGIN
         rst <= '1';
         WAIT FOR 10 ns;
         rst <= '0';
+        WAIT FOR 10 ns;
+        start <= '1';
+        WAIT FOR 10 ns;
+        start <= '0';
         WAIT FOR 3000 ns;
         std.env.stop; -- or std.env.stop;
     END PROCESS;
