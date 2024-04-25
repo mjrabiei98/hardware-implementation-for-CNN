@@ -146,7 +146,7 @@ BEGIN
         END IF;
     END PROCESS;
 
-    PROCESS (pstate, start) BEGIN
+    PROCESS (pstate, start, counter_j_cout, counter_y_cout, counter_y_out, counter_x_out) BEGIN
         en_cti <= '0';
         en_ctj <= '0';
         en_ctx <= '0';

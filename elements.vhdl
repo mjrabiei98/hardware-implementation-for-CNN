@@ -41,8 +41,7 @@ ARCHITECTURE behavioral OF counter IS
 BEGIN
     PROCESS (clk, rst)
     BEGIN
-        IF rst = '0' THEN
-            counter_out <= (OTHERS => '0');
+        IF rst = '1' THEN
             cnt <= (OTHERS => '0');
             cout <= '0';
         ELSIF (clk = '1' AND clk'event AND en = '1') THEN
