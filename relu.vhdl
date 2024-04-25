@@ -3,7 +3,7 @@ USE IEEE.STD_LOGIC_1164.ALL;
 
 ENTITY relu IS
     GENERIC (
-        data_width : INTEGER := 16
+        data_width : INTEGER := 8
     );
     PORT (
         a, b, c, d : IN STD_LOGIC_VECTOR(data_width - 1 DOWNTO 0);
