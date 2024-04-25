@@ -4,7 +4,7 @@ USE IEEE.STD_LOGIC_1164.ALL;
 ENTITY reg IS
     GENERIC (register_size : INTEGER := 16);
     PORT (
-        clk, rst : IN STD_LOGIC;
+        clk, rst, en : IN STD_LOGIC;
         d : IN STD_LOGIC_VECTOR(register_size - 1 DOWNTO 0);
         q : OUT STD_LOGIC_VECTOR(register_size - 1 DOWNTO 0));
 END ENTITY reg;
@@ -15,7 +15,7 @@ BEGIN
     BEGIN
         IF rst = '0' THEN
             q <= (OTHERS => '0');
-        ELSIF (clk = '1' AND clk'event) THEN
+        ELSIF (clk = '1' AND clk'event and en = '1') THEN
             q <= d;
         END IF;
 
@@ -30,7 +30,7 @@ ENTITY counter IS
         counter_size : INTEGER := 4;
         counter_limit : INTEGER := 3);
     PORT (
-        clk, rst : IN STD_LOGIC;
+        clk, rst, en : IN STD_LOGIC;
         counter_out : OUT STD_LOGIC_VECTOR(counter_size - 1 DOWNTO 0);
         cout : OUT STD_LOGIC
     );
@@ -45,7 +45,7 @@ BEGIN
             counter_out <= (OTHERS => '0');
             cnt <= (OTHERS => '0');
             cout <= '0';
-        ELSIF (clk = '1' AND clk'event) THEN
+        ELSIF (clk = '1' AND clk'event AND en = '1') THEN
             IF (unsigned(cnt) + 1 < counter_limit) THEN
                 cnt <= STD_LOGIC_VECTOR(unsigned(cnt) + 1);
             ELSE
@@ -127,4 +127,46 @@ BEGIN
         d WHEN "11",
         a WHEN OTHERS;
 
+END behavioral; -- behavioral
+LIBRARY IEEE;
+USE IEEE.STD_LOGIC_1164.ALL;
+USE IEEE.NUMERIC_STD.ALL;
+ENTITY kernel_mux IS
+    GENERIC (
+        input_size : INTEGER := 8
+    );
+    PORT (
+        a, b, c, d, e, f, g, h, k : IN STD_LOGIC_VECTOR(input_size - 1 DOWNTO 0);
+        i, j : IN STD_LOGIC_VECTOR(input_size - 1 DOWNTO 0);
+        output : OUT STD_LOGIC_VECTOR(input_size - 1 DOWNTO 0)
+    );
+END ENTITY kernel_mux;
+
+ARCHITECTURE behavioral OF kernel_mux IS
+
+BEGIN
+    PROCESS (i, j)
+    BEGIN
+        IF (i = "00000000" AND j = "00000000") THEN
+            output <= a;
+        ELSIF (i = "00000001" AND j = "00000000") THEN
+            output <= b;
+        ELSIF (i = "00000010" AND j = "00000000") THEN
+            output <= c;
+        ELSIF (i = "00000000" AND j = "00000001") THEN
+            output <= d;
+        ELSIF (i = "00000001" AND j = "00000001") THEN
+            output <= e;
+        ELSIF (i = "00000010" AND j = "00000001") THEN
+            output <= f;
+        ELSIF (i = "00000000" AND j = "00000010") THEN
+            output <= g;
+        ELSIF (i = "00000001" AND j = "00000010") THEN
+            output <= h;
+        ELSIF (i = "00000010" AND j = "00000010") THEN
+            output <= k;
+        ELSE
+            output <= (OTHERS => '0');
+        END IF;
+    END PROCESS;
 END behavioral; -- behavioral
