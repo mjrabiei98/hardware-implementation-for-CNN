@@ -29,7 +29,7 @@ ARCHITECTURE behavioral OF patter_finder IS
     SIGNAL maxpool1_out, maxpool2_out, maxpool3_out : STD_LOGIC_VECTOR(data_width - 1 DOWNTO 0);
 BEGIN
     ram1 : ENTITY work.ram(behavioral)
-        GENERIC MAP(8, 8)
+        GENERIC MAP(8, 16)
         PORT MAP(
             rst,
             data_in,
@@ -45,7 +45,7 @@ BEGIN
     --         PORT MAP();
     -- END GENERATE;
 
-    conv1 : ENTITY work.convolution(behavioral)
+    conv1 : ENTITY work.convolution(modular)
         GENERIC MAP(
             "00000000", "00000100", 8, "00000000", "00000001", "00000000",
             "00000001", "00000001", "00000001", "00000000", "00000001", "00000000"
@@ -54,7 +54,7 @@ BEGIN
             clk, rst, start, ram_data_out, conv1_data_out1, conv1_data_out2, conv1_data_out3, conv1_data_out4, done
         );
 
-    conv2 : ENTITY work.convolution(behavioral)
+    conv2 : ENTITY work.convolution(modular)
         GENERIC MAP(
             "00000000", "00000100", 8, "00000000", "00000001", "00000000",
             "00000001", "00000001", "00000001", "00000000", "00000001", "00000000"
@@ -63,7 +63,7 @@ BEGIN
             clk, rst, start, ram_data_out, conv2_data_out1, conv2_data_out2, conv2_data_out3, conv2_data_out4, done
         );
 
-    conv3 : ENTITY work.convolution(behavioral)
+    conv3 : ENTITY work.convolution(modular)
         GENERIC MAP(
             "00000000", "00000100", 8, "00000000", "00000001", "00000000",
             "00000001", "00000001", "00000001", "00000000", "00000001", "00000000"

@@ -22,7 +22,7 @@ ENTITY convolution_datapath IS
         SIGNAL data_in : IN STD_LOGIC_VECTOR(data_width - 1 DOWNTO 0);
         SIGNAL data_out1, data_out2, data_out3, data_out4 : OUT STD_LOGIC_VECTOR(data_width - 1 DOWNTO 0);
         SIGNAL counter_i_cout, counter_j_cout, counter_x_cout, counter_y_cout : OUT STD_LOGIC;
-        SIGNAL adder_mux_1_sel, adder_mux_2_sel, adr_reg_mux_sel : IN STD_LOGIC_VECTOR(1 DOWNTO 0);
+        SIGNAL adder_mux_1_sel, adder_mux_2_sel, adr_reg_mux_sel, mult_mux_1_sel, mult_mux_2_sel : IN STD_LOGIC_VECTOR(1 DOWNTO 0);
         SIGNAL cx_out, cy_out : OUT STD_LOGIC_VECTOR(7 DOWNTO 0)
     );
 END ENTITY convolution_datapath;
@@ -30,7 +30,7 @@ END ENTITY convolution_datapath;
 ARCHITECTURE modular OF convolution_datapath IS
 
     SIGNAL counter_i_out, counter_j_out, counter_x_out, counter_y_out, kernel_mux_out : STD_LOGIC_VECTOR(data_width - 1 DOWNTO 0);
-    SIGNAL adder_mux_1_out, adder_mux_2_out, mult_mux_1_sel, mult_mux_2_sel, adr_reg_mux_out : STD_LOGIC_VECTOR(data_width - 1 DOWNTO 0);
+    SIGNAL adder_mux_1_out, adder_mux_2_out, adr_reg_mux_out : STD_LOGIC_VECTOR(data_width - 1 DOWNTO 0);
     SIGNAL mult_out, adder_out, address_reg_out, mult_mux_1_out, mult_mux_2_out, temp_reg_out : STD_LOGIC_VECTOR(data_width - 1 DOWNTO 0);
 
 BEGIN
@@ -288,7 +288,7 @@ BEGIN
             data_in,
             data_out1, data_out2, data_out3, data_out4,
             counter_i_cout, counter_j_cout, counter_x_cout, counter_y_cout,
-            adder_mux_1_sel, adder_mux_2_sel, adr_reg_mux_sel,
+            adder_mux_1_sel, adder_mux_2_sel, adr_reg_mux_sel, mult_mux_1_sel, mult_mux_2_sel,
             counter_x_out, counter_y_out
         );
     controller : ENTITY work.convolution_controller(behavioral)
