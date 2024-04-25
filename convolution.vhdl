@@ -5,32 +5,32 @@ LIBRARY work;
 USE work.MyPackage.ALL;
 ENTITY convolution_datapath IS
     GENERIC (
-        image_size : std_logic_vector(7 downto 0) := "00000100";
+        image_size : STD_LOGIC_VECTOR(7 DOWNTO 0) := "00000100";
         data_width : INTEGER := 8;
-        kernet_1 : std_logic_vector(7 downto 0) := (others => '0');
-        kernet_2 : std_logic_vector(7 downto 0) := (others => '0');
-        kernet_3 : std_logic_vector(7 downto 0) := (others => '0');
-        kernet_4 : std_logic_vector(7 downto 0) := (others => '0');
-        kernet_5 : std_logic_vector(7 downto 0) := (others => '0');
-        kernet_6 : std_logic_vector(7 downto 0) := (others => '0');
-        kernet_7 : std_logic_vector(7 downto 0) := (others => '0');
-        kernet_8 : std_logic_vector(7 downto 0) := (others => '0');
-        kernet_9 : std_logic_vector(7 downto 0) := (others => '0')
+        kernet_1 : STD_LOGIC_VECTOR(7 DOWNTO 0) := (OTHERS => '0');
+        kernet_2 : STD_LOGIC_VECTOR(7 DOWNTO 0) := (OTHERS => '0');
+        kernet_3 : STD_LOGIC_VECTOR(7 DOWNTO 0) := (OTHERS => '0');
+        kernet_4 : STD_LOGIC_VECTOR(7 DOWNTO 0) := (OTHERS => '0');
+        kernet_5 : STD_LOGIC_VECTOR(7 DOWNTO 0) := (OTHERS => '0');
+        kernet_6 : STD_LOGIC_VECTOR(7 DOWNTO 0) := (OTHERS => '0');
+        kernet_7 : STD_LOGIC_VECTOR(7 DOWNTO 0) := (OTHERS => '0');
+        kernet_8 : STD_LOGIC_VECTOR(7 DOWNTO 0) := (OTHERS => '0');
+        kernet_9 : STD_LOGIC_VECTOR(7 DOWNTO 0) := (OTHERS => '0')
     );
     PORT (
-        SIGNAL clk, rst, en_cti, en_ctj, en_ctx, en_cty, temp_reg_en,address_reg_en, out1_reg_en, out2_reg_en, out3_reg_en, out4_reg_en  : IN STD_LOGIC;
+        SIGNAL clk, rst, en_cti, en_ctj, en_ctx, en_cty, temp_reg_en, address_reg_en, out1_reg_en, out2_reg_en, out3_reg_en, out4_reg_en : IN STD_LOGIC;
         SIGNAL data_in : IN STD_LOGIC_VECTOR(data_width - 1 DOWNTO 0);
-        signal data_out1, data_out2, data_out3, data_out4 : out std_logic_vector(data_width - 1 downto 0) 
+        SIGNAL data_out1, data_out2, data_out3, data_out4 : OUT STD_LOGIC_VECTOR(data_width - 1 DOWNTO 0);
+        SIGNAL counter_i_cout, counter_j_cout, counter_x_cout, counter_y_cout : OUT STD_LOGIC;
+        SIGNAL adder_mux_1_sel, adder_mux_2_sel, adr_reg_mux_sel : IN STD_LOGIC_VECTOR(1 DOWNTO 0)
     );
 END ENTITY convolution_datapath;
 
 ARCHITECTURE modular OF convolution_datapath IS
 
     SIGNAL counter_i_out, counter_j_out, counter_x_out, counter_y_out, kernel_mux_out : STD_LOGIC_VECTOR(data_width - 1 DOWNTO 0);
-    SIGNAL counter_i_cout, counter_j_cout, counter_x_cout, counter_y_cout : STD_LOGIC;
     SIGNAL adder_mux_1_out, adder_mux_2_out, mult_mux_1_sel, mult_mux_2_sel, adr_reg_mux_out : STD_LOGIC_VECTOR(data_width - 1 DOWNTO 0);
     SIGNAL mult_out, adder_out, address_reg_out, mult_mux_1_out, mult_mux_2_out, temp_reg_out : STD_LOGIC_VECTOR(data_width - 1 DOWNTO 0);
-    SIGNAL adder_mux_1_sel, adder_mux_2_sel, adr_reg_mux_sel : STD_LOGIC_VECTOR(1 DOWNTO 0);
 
 BEGIN
     counter_i : ENTITY work.counter(behavioral)
@@ -51,27 +51,27 @@ BEGIN
 
     adder_mux_1 : ENTITY work.mux(behavioral)
         GENERIC MAP(data_width)
-        PORT MAP(counter_i_out, counter_j_out, temp_reg_out, (others => 'Z'), adder_mux_1_sel, adder_mux_1_out);
+        PORT MAP(counter_i_out, counter_j_out, temp_reg_out, (OTHERS => 'Z'), adder_mux_1_sel, adder_mux_1_out);
 
     adder_mux_2 : ENTITY work.mux(behavioral)
         GENERIC MAP(data_width)
-        PORT MAP(counter_x_out, counter_y_out, mult_out, (others => 'Z'), adder_mux_2_sel, adder_mux_2_out);
+        PORT MAP(counter_x_out, counter_y_out, mult_out, (OTHERS => 'Z'), adder_mux_2_sel, adder_mux_2_out);
 
     adr : ENTITY work.adder(behavioral)
         GENERIC MAP(8)
-    PORT MAP(adder_mux_1_out, adder_mux_2_out, adder_out);
+        PORT MAP(adder_mux_1_out, adder_mux_2_out, adder_out);
 
     mult_mux_1 : ENTITY work.mux(behavioral)
         GENERIC MAP(data_width)
-        PORT MAP(address_reg_out, kernel_mux_out, (others => 'Z'), (others => 'Z'), mult_mux_1_sel, mult_mux_1_out);
+        PORT MAP(address_reg_out, kernel_mux_out, (OTHERS => 'Z'), (OTHERS => 'Z'), mult_mux_1_sel, mult_mux_1_out);
 
     mult_mux_2 : ENTITY work.mux(behavioral)
         GENERIC MAP(data_width)
-        PORT MAP(image_size, data_in, (others => 'Z'), (others => 'Z'), mult_mux_2_sel, mult_mux_2_out);
+        PORT MAP(image_size, data_in, (OTHERS => 'Z'), (OTHERS => 'Z'), mult_mux_2_sel, mult_mux_2_out);
 
     adr_reg_mux : ENTITY work.mux(behavioral)
         GENERIC MAP(data_width)
-        PORT MAP(adder_out, mult_out, (others => 'Z'), (others => 'Z'), adr_reg_mux_sel, adr_reg_mux_out);
+        PORT MAP(adder_out, mult_out, (OTHERS => 'Z'), (OTHERS => 'Z'), adr_reg_mux_sel, adr_reg_mux_out);
 
     kernel_mux1 : ENTITY work.kernel_mux(behavioral)
         GENERIC MAP(data_width)
@@ -109,14 +109,58 @@ BEGIN
 
 END modular; -- modular
 
--- LIBRARY library IEEE;
--- USE IEEE.std_logic_1164.ALL;
--- USE IEEE.numeric_std.ALL;
--- ENTITY convolution_controller IS
---     GENERIC (
+LIBRARY IEEE;
+USE IEEE.std_logic_1164.ALL;
+USE IEEE.numeric_std.ALL;
+ENTITY convolution_controller IS
+    PORT (
+        SIGNAL clk, rst : IN STD_LOGIC;
+        SIGNAL en_cti, en_ctj, en_ctx, en_cty, temp_reg_en, address_reg_en, out1_reg_en, out2_reg_en, out3_reg_en, out4_reg_en : OUT STD_LOGIC;
+        SIGNAL counter_i_cout, counter_j_cout, counter_x_cout, counter_y_cout : IN STD_LOGIC;
+        SIGNAL adder_mux_1_sel, adder_mux_2_sel, adr_reg_mux_sel : OUT STD_LOGIC_VECTOR(1 DOWNTO 0)
+    );
+END ENTITY convolution_controller;
 
---     );
---     PORT (
+ARCHITECTURE behavioral OF convolution_controller IS
 
---     );
--- END ENTITY convolution_controller;
+    TYPE state IS (idle);
+
+    SIGNAL pstate, nstate : state := idle;
+
+BEGIN
+
+    PROCESS (clk, rst)
+    BEGIN
+        IF (rst = '1') THEN
+            pstate <= idle;
+        ELSIF (clk = '1' AND clk'EVENT) THEN
+            pstate <= nstate;
+        END IF;
+    END PROCESS;
+
+    PROCESS (pstate) BEGIN
+        en_cti <= '0';
+        en_ctj <= '0';
+        en_ctx <= '0';
+        en_cty <= '0';
+        temp_reg_en <= '0';
+        address_reg_en <= '0';
+        out1_reg_en <= '0';
+        out2_reg_en <= '0';
+        out3_reg_en <= '0';
+        out4_reg_en <= '0';
+        adder_mux_1_sel <= "00";
+        adder_mux_2_sel <= "00";
+        adr_reg_mux_sel <= "00";
+
+        CASE pstate IS
+
+            WHEN idle =>
+
+                nstate <= idle;
+
+        END CASE;
+
+    END PROCESS;
+
+END behavioral; -- arch
