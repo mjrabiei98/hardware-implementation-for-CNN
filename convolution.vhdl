@@ -1,8 +1,7 @@
 LIBRARY IEEE;
 USE IEEE.std_logic_1164.ALL;
 USE IEEE.numeric_std.ALL;
-LIBRARY work;
-USE work.MyPackage.ALL;
+
 ENTITY convolution_datapath IS
     GENERIC (
         bias_value : STD_LOGIC_VECTOR(7 DOWNTO 0) := "00000000";
@@ -23,7 +22,8 @@ ENTITY convolution_datapath IS
         SIGNAL data_in : IN STD_LOGIC_VECTOR(data_width - 1 DOWNTO 0);
         SIGNAL data_out1, data_out2, data_out3, data_out4 : OUT STD_LOGIC_VECTOR(data_width - 1 DOWNTO 0);
         SIGNAL counter_i_cout, counter_j_cout, counter_x_cout, counter_y_cout : OUT STD_LOGIC;
-        SIGNAL adder_mux_1_sel, adder_mux_2_sel, adr_reg_mux_sel : IN STD_LOGIC_VECTOR(1 DOWNTO 0)
+        SIGNAL adder_mux_1_sel, adder_mux_2_sel, adr_reg_mux_sel : IN STD_LOGIC_VECTOR(1 DOWNTO 0);
+        SIGNAL cx_out, cy_out : OUT STD_LOGIC_VECTOR(7 DOWNTO 0)
     );
 END ENTITY convolution_datapath;
 
@@ -34,6 +34,8 @@ ARCHITECTURE modular OF convolution_datapath IS
     SIGNAL mult_out, adder_out, address_reg_out, mult_mux_1_out, mult_mux_2_out, temp_reg_out : STD_LOGIC_VECTOR(data_width - 1 DOWNTO 0);
 
 BEGIN
+    cx_out <= counter_x_out;
+    cy_out <= counter_y_out;
     counter_i : ENTITY work.counter(behavioral)
         GENERIC MAP(data_width, 3)
         PORT MAP(clk, rst, en_cti, counter_i_out, counter_i_cout);
@@ -242,3 +244,60 @@ BEGIN
     END PROCESS;
 
 END behavioral; -- arch
+LIBRARY IEEE;
+USE IEEE.std_logic_1164.ALL;
+
+ENTITY convolution IS
+    GENERIC (
+        bias_value : STD_LOGIC_VECTOR(7 DOWNTO 0) := "00000000";
+        image_size : STD_LOGIC_VECTOR(7 DOWNTO 0) := "00000100";
+        data_width : INTEGER := 8;
+        kernet_1 : STD_LOGIC_VECTOR(7 DOWNTO 0) := (OTHERS => '0');
+        kernet_2 : STD_LOGIC_VECTOR(7 DOWNTO 0) := (OTHERS => '0');
+        kernet_3 : STD_LOGIC_VECTOR(7 DOWNTO 0) := (OTHERS => '0');
+        kernet_4 : STD_LOGIC_VECTOR(7 DOWNTO 0) := (OTHERS => '0');
+        kernet_5 : STD_LOGIC_VECTOR(7 DOWNTO 0) := (OTHERS => '0');
+        kernet_6 : STD_LOGIC_VECTOR(7 DOWNTO 0) := (OTHERS => '0');
+        kernet_7 : STD_LOGIC_VECTOR(7 DOWNTO 0) := (OTHERS => '0');
+        kernet_8 : STD_LOGIC_VECTOR(7 DOWNTO 0) := (OTHERS => '0');
+        kernet_9 : STD_LOGIC_VECTOR(7 DOWNTO 0) := (OTHERS => '0')
+    );
+    PORT (
+        SIGNAL clk, rst, start : IN STD_LOGIC;
+        SIGNAL data_in : IN STD_LOGIC_VECTOR(data_width - 1 DOWNTO 0);
+        SIGNAL data_out1, data_out2, data_out3, data_out4 : OUT STD_LOGIC_VECTOR(data_width - 1 DOWNTO 0);
+        SIGNAL done : OUT STD_LOGIC
+    );
+END ENTITY convolution;
+ARCHITECTURE modular OF convolution IS
+
+    SIGNAL en_cti, en_ctj, en_ctx, en_cty, temp_reg_en, address_reg_en, out1_reg_en, out2_reg_en, out3_reg_en, out4_reg_en : STD_LOGIC;
+    SIGNAL counter_i_cout, counter_j_cout, counter_x_cout, counter_y_cout : STD_LOGIC;
+    SIGNAL adder_mux_1_sel, adder_mux_2_sel, adr_reg_mux_sel, mult_mux_1_sel, mult_mux_2_sel : STD_LOGIC_VECTOR(1 DOWNTO 0);
+    SIGNAL counter_x_out, counter_y_out : STD_LOGIC_VECTOR(7 DOWNTO 0);
+
+BEGIN
+
+    datapath : ENTITY work.convolution_datapath(modular)
+        GENERIC MAP(
+            bias_value, image_size, data_width, kernet_1, kernet_2, kernet_3,
+            kernet_4, kernet_5, kernet_6, kernet_7, kernet_8, kernet_9
+        )
+        PORT MAP(
+            clk, rst, en_cti, en_ctj, en_ctx, en_cty, temp_reg_en, address_reg_en, out1_reg_en, out2_reg_en, out3_reg_en, out4_reg_en,
+            data_in,
+            data_out1, data_out2, data_out3, data_out4,
+            counter_i_cout, counter_j_cout, counter_x_cout, counter_y_cout,
+            adder_mux_1_sel, adder_mux_2_sel, adr_reg_mux_sel,
+            counter_x_out, counter_y_out
+        );
+    controller : ENTITY work.convolution_controller(behavioral)
+        PORT MAP(
+            clk, rst, start, en_cti, en_ctj, en_ctx, en_cty, temp_reg_en, address_reg_en, out1_reg_en, out2_reg_en, out3_reg_en, out4_reg_en,
+            counter_i_cout, counter_j_cout, counter_x_cout, counter_y_cout,
+            adder_mux_1_sel, adder_mux_2_sel, adr_reg_mux_sel, mult_mux_1_sel, mult_mux_2_sel,
+            counter_x_out, counter_y_out,
+            done
+        );
+
+END ARCHITECTURE modular;
