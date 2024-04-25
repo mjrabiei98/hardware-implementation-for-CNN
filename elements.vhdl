@@ -48,6 +48,7 @@ BEGIN
         ELSIF (clk = '1' AND clk'event AND en = '1') THEN
             IF (unsigned(cnt) + 1 < counter_limit) THEN
                 cnt <= STD_LOGIC_VECTOR(unsigned(cnt) + 1);
+                cout <= '0';
             ELSE
                 cnt <= (OTHERS => '0');
                 cout <= '1';

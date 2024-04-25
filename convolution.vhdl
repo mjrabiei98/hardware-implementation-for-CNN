@@ -5,6 +5,7 @@ LIBRARY work;
 USE work.MyPackage.ALL;
 ENTITY convolution_datapath IS
     GENERIC (
+        bias_value : STD_LOGIC_VECTOR(7 DOWNTO 0) := "00000000";
         image_size : STD_LOGIC_VECTOR(7 DOWNTO 0) := "00000100";
         data_width : INTEGER := 8;
         kernet_1 : STD_LOGIC_VECTOR(7 DOWNTO 0) := (OTHERS => '0');
@@ -42,20 +43,20 @@ BEGIN
         PORT MAP(clk, rst, en_ctj, counter_j_out, counter_j_cout);
 
     counter_x : ENTITY work.counter(behavioral)
-        GENERIC MAP(data_width, 3)
+        GENERIC MAP(data_width, 2)
         PORT MAP(clk, rst, en_ctx, counter_x_out, counter_x_cout);
 
     counter_y : ENTITY work.counter(behavioral)
-        GENERIC MAP(data_width, 3)
+        GENERIC MAP(data_width, 2)
         PORT MAP(clk, rst, en_cty, counter_y_out, counter_y_cout);
 
     adder_mux_1 : ENTITY work.mux(behavioral)
         GENERIC MAP(data_width)
-        PORT MAP(counter_i_out, counter_j_out, temp_reg_out, (OTHERS => 'Z'), adder_mux_1_sel, adder_mux_1_out);
+        PORT MAP(bias_value, counter_j_out, temp_reg_out, address_reg_out, adder_mux_1_sel, adder_mux_1_out);
 
     adder_mux_2 : ENTITY work.mux(behavioral)
         GENERIC MAP(data_width)
-        PORT MAP(counter_x_out, counter_y_out, mult_out, (OTHERS => 'Z'), adder_mux_2_sel, adder_mux_2_out);
+        PORT MAP(counter_x_out, counter_y_out, mult_out, counter_i_out, adder_mux_2_sel, adder_mux_2_out);
 
     adr : ENTITY work.adder(behavioral)
         GENERIC MAP(8)
@@ -114,16 +115,21 @@ USE IEEE.std_logic_1164.ALL;
 USE IEEE.numeric_std.ALL;
 ENTITY convolution_controller IS
     PORT (
-        SIGNAL clk, rst : IN STD_LOGIC;
+        SIGNAL clk, rst, start : IN STD_LOGIC;
         SIGNAL en_cti, en_ctj, en_ctx, en_cty, temp_reg_en, address_reg_en, out1_reg_en, out2_reg_en, out3_reg_en, out4_reg_en : OUT STD_LOGIC;
         SIGNAL counter_i_cout, counter_j_cout, counter_x_cout, counter_y_cout : IN STD_LOGIC;
-        SIGNAL adder_mux_1_sel, adder_mux_2_sel, adr_reg_mux_sel : OUT STD_LOGIC_VECTOR(1 DOWNTO 0)
+        SIGNAL adder_mux_1_sel, adder_mux_2_sel, adr_reg_mux_sel, mult_mux_1_sel, mult_mux_2_sel : OUT STD_LOGIC_VECTOR(1 DOWNTO 0);
+        SIGNAL counter_x_out, counter_y_out : IN STD_LOGIC_VECTOR(7 DOWNTO 0);
+        SIGNAL done : OUT STD_LOGIC
     );
 END ENTITY convolution_controller;
 
 ARCHITECTURE behavioral OF convolution_controller IS
 
-    TYPE state IS (idle);
+    TYPE state IS (
+        idle, adr_gen1, adr_gen2, adr_gen3,
+        adr_gen4, kerlent_mult, add_bias, load_output, done_state
+    );
 
     SIGNAL pstate, nstate : state := idle;
 
@@ -152,13 +158,85 @@ BEGIN
         adder_mux_1_sel <= "00";
         adder_mux_2_sel <= "00";
         adr_reg_mux_sel <= "00";
+        mult_mux_1_sel <= "00";
+        mult_mux_2_sel <= "00";
 
         CASE pstate IS
 
             WHEN idle =>
+                IF start = '0' AND start'event THEN
+                    nstate <= adr_gen1;
+                ELSE
+                    nstate <= idle;
+                END IF;
 
-                nstate <= idle;
+            WHEN adr_gen1 =>
+                nstate <= adr_gen1;
+                adder_mux_1_sel <= "01";
+                adder_mux_2_sel <= "01";
+                adr_reg_mux_sel <= "00";
+                address_reg_en <= '1';
 
+            WHEN adr_gen2 =>
+                nstate <= adr_gen3;
+                mult_mux_1_sel <= "00";
+                mult_mux_2_sel <= "00";
+                adr_reg_mux_sel <= "01";
+                address_reg_en <= '1';
+
+            WHEN adr_gen3 =>
+                nstate <= adr_gen4;
+                adder_mux_1_sel <= "11";
+                adder_mux_2_sel <= "00";
+                adr_reg_mux_sel <= "00";
+                address_reg_en <= '1';
+
+            WHEN adr_gen4 =>
+                nstate <= kerlent_mult;
+                adder_mux_1_sel <= "11";
+                adder_mux_2_sel <= "11";
+                adr_reg_mux_sel <= "00";
+                address_reg_en <= '1';
+
+            WHEN kerlent_mult =>
+                mult_mux_1_sel <= "01";
+                mult_mux_2_sel <= "01";
+                adder_mux_1_sel <= "10";
+                adder_mux_2_sel <= "10";
+                temp_reg_en <= '1';
+                en_cti <= '1';
+                IF counter_j_cout = '1' THEN
+                    nstate <= add_bias;
+                ELSE
+                    nstate <= adr_gen1;
+                END IF;
+
+            WHEN add_bias =>
+                nstate <= load_output;
+                -- adder_mux_1_sel = "00";
+                -- adder_mux_2_sel = "11";
+                -- adr_reg_mux_sel = "00";
+                -- temp_reg_en <= '1';
+
+            WHEN load_output =>
+                IF counter_y_out = "00000000" AND counter_x_out = "00000000" THEN
+                    out1_reg_en <= '1';
+                ELSIF counter_y_out = "00000000" AND counter_x_out = "00000001" THEN
+                    out2_reg_en <= '1';
+                ELSIF counter_y_out = "00000001" AND counter_x_out = "00000000" THEN
+                    out3_reg_en <= '1';
+                ELSIF counter_y_out = "00000001" AND counter_x_out = "00000001" THEN
+                    out4_reg_en <= '1';
+                END IF;
+                IF counter_y_cout = '1' THEN
+                    nstate <= done_state;
+                ELSE
+                    nstate <= adr_gen1;
+                END IF;
+                en_ctx <= '1';
+
+            WHEN done_state =>
+                done <= '1';
         END CASE;
 
     END PROCESS;
