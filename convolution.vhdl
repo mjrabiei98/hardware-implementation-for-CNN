@@ -161,7 +161,7 @@ BEGIN
         END IF;
     END PROCESS;
 
-    PROCESS (pstate, start, counter_j_out, counter_i_out, counter_x_cout, counter_y_out, counter_x_out) BEGIN
+    PROCESS (pstate, start, counter_j_out, counter_i_out, counter_y_out, counter_x_out) BEGIN
         en_cti <= '0';
         done <= '0';
         en_ctj <= '0';
@@ -259,7 +259,9 @@ BEGIN
                     nstate <= adr_gen1;
                 END IF;
                 en_ctx <= '1';
-                en_cty <= counter_x_cout;
+                IF counter_x_out = "00000001" THEN
+                en_cty <= '1';
+                END IF;
 
             WHEN done_state =>
                 done <= '1';

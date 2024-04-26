@@ -196,7 +196,7 @@ BEGIN
         b WHEN "001",
         c WHEN "010",
         d WHEN "011",
-        d WHEN "100",
+        e WHEN "100",
         a WHEN OTHERS;
 
 END behavioral; -- behavioral

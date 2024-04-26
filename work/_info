@@ -4,7 +4,7 @@ K3
 cModel Technology
 dC:\Users\mohammad javad\Desktop\uni\arshad tehran university\term 2\VHDL\HW\HW1\code
 Eadder
-Z0 w1714156787
+Z0 w1714159866
 Z1 DPx4 ieee 11 numeric_std 0 22 O3PF8EB`?j9=z7KT`fn941
 Z2 DPx3 std 6 textio 0 22 5>J:;AW>W0[[dW0I6EN1Q0
 Z3 DPx4 ieee 14 std_logic_1164 0 22 5=aWaoGZSMWIcH0i^f`XF1
@@ -16,7 +16,7 @@ L65
 Vee5B`[>REZAfz@1U_i47;1
 Z7 OV;C;10.1d;51
 32
-Z8 !s108 1714159452.679000
+Z8 !s108 1714159933.234000
 Z9 !s90 -reportprogress|300|-work|work|-2002|-explicit|C:/Users/mohammad javad/Desktop/uni/arshad tehran university/term 2/VHDL/HW/HW2/code/elements.vhdl|
 Z10 !s107 C:/Users/mohammad javad/Desktop/uni/arshad tehran university/term 2/VHDL/HW/HW2/code/elements.vhdl|
 Z11 o-work work -2002 -explicit -O0
@@ -41,23 +41,23 @@ R12
 !s100 0B@o;1V94ih_U?RH3Vom80
 !i10b 1
 Econvolution
-Z14 w1714159450
+Z14 w1714159620
 R2
 R3
 R4
 Z15 8C:/Users/mohammad javad/Desktop/uni/arshad tehran university/term 2/VHDL/HW/HW2/code/convolution.vhdl
 Z16 FC:/Users/mohammad javad/Desktop/uni/arshad tehran university/term 2/VHDL/HW/HW2/code/convolution.vhdl
 l0
-L274
+L276
 V0PWAJUEI98oc<<FH[HgXU1
 R7
 32
-Z17 !s108 1714159452.757000
+Z17 !s108 1714159933.316000
 Z18 !s90 -reportprogress|300|-work|work|-2002|-explicit|C:/Users/mohammad javad/Desktop/uni/arshad tehran university/term 2/VHDL/HW/HW2/code/convolution.vhdl|
 Z19 !s107 C:/Users/mohammad javad/Desktop/uni/arshad tehran university/term 2/VHDL/HW/HW2/code/convolution.vhdl|
 R11
 R12
-!s100 MMd[:aHCzD<5LGlIOO2R80
+!s100 61HgXjF3[1Rd9OBI6M88n1
 !i10b 1
 Amodular
 Z20 DEx4 work 22 convolution_controller 0 22 >1E5[PW9lJTDn;oD[o;S]3
@@ -66,8 +66,8 @@ Z21 DEx4 work 20 convolution_datapath 0 22 Q@<1H`hXT^mAG@=Wbed8z0
 R2
 R3
 Z22 DEx4 work 11 convolution 0 22 0PWAJUEI98oc<<FH[HgXU1
-l306
-L297
+l308
+L299
 V>9UWbaR6P>YeM4@OYIhdW1
 R7
 32
@@ -76,7 +76,7 @@ R18
 R19
 R11
 R12
-!s100 P^_I64=mT1m`PYin:NJEV2
+!s100 h5CDUAY2>Mb@b=^1MfmQE0
 !i10b 1
 Econvolution_controller
 R14
@@ -105,7 +105,7 @@ R3
 R20
 l153
 L144
-V^]U89dK6KM82kBR1b2gLL1
+VefM5;b]CGYcfjQbZS2AXQ3
 R7
 32
 R17
@@ -113,7 +113,7 @@ R18
 R19
 R11
 R12
-!s100 fB;ASCP?1_amnQ40:eV533
+!s100 SdJdNB:UajfQB6?8L;ZZT3
 !i10b 1
 Econvolution_datapath
 R14
@@ -160,7 +160,7 @@ R12
 !s100 e4[c^f`iMzNZ`kFbjW`=F2
 !i10b 1
 Ecounter
-Z29 w1714156787
+Z29 w1714159866
 R1
 R2
 R3
@@ -245,7 +245,7 @@ L4
 VQPaVC56zLjE69KaHQ6eK42
 R7
 32
-Z33 !s108 1714159452.805000
+Z33 !s108 1714159933.360000
 Z34 !s90 -reportprogress|300|-work|work|-2002|-explicit|C:/Users/mohammad javad/Desktop/uni/arshad tehran university/term 2/VHDL/HW/HW2/code/maxpool.vhdl|
 Z35 !s107 C:/Users/mohammad javad/Desktop/uni/arshad tehran university/term 2/VHDL/HW/HW2/code/maxpool.vhdl|
 R11
@@ -369,7 +369,7 @@ R3
 R26
 l193
 L191
-V2e8bNI:1k<QTcLN8]aE542
+VFWnBDfbQ6`eL0nH@Lm5]B3
 R7
 32
 R8
@@ -377,7 +377,7 @@ R9
 R10
 R11
 R12
-!s100 Sn]C5ocd55@3L50Mf^?Qd3
+!s100 RemB<4g]JX;5d5gmASm5^2
 !i10b 1
 Pmypackage
 R1
@@ -400,7 +400,7 @@ R19
 !i10b 1
 !s108 1714024345.250000
 Epatter_finder
-Z37 w1714149589
+Z37 w1714159928
 R2
 R3
 R4
@@ -411,7 +411,7 @@ L4
 VSkd0^C[kD?7_O9K`5<5F=2
 R7
 32
-Z40 !s108 1714159452.914000
+Z40 !s108 1714159933.471000
 Z41 !s90 -reportprogress|300|-work|work|-2002|-explicit|C:/Users/mohammad javad/Desktop/uni/arshad tehran university/term 2/VHDL/HW/HW2/code/pattern_finder.vhdl|
 Z42 !s107 C:/Users/mohammad javad/Desktop/uni/arshad tehran university/term 2/VHDL/HW/HW2/code/pattern_finder.vhdl|
 R11
@@ -431,8 +431,7 @@ R3
 Z48 DEx4 work 13 patter_finder 0 22 Skd0^C[kD?7_O9K`5<5F=2
 l30
 L18
-V4achOK`d`BNA:KnN=[iz_2
-!s100 8UDE^PPKY??6D:SfRXaaA3
+V1[DX6f@?XeR7B1I:LG=SG3
 R7
 32
 R40
@@ -440,6 +439,7 @@ R41
 R42
 R11
 R12
+!s100 MZjfVjMPBFJ80TlI@eQBV1
 !i10b 1
 Eram
 Z49 w1714149511
@@ -455,7 +455,7 @@ L7
 V8C3nA]0<0_F6E]OlofKhF2
 R7
 32
-Z52 !s108 1714159452.632000
+Z52 !s108 1714159933.186000
 Z53 !s90 -reportprogress|300|-work|work|-2002|-explicit|C:/Users/mohammad javad/Desktop/uni/arshad tehran university/term 2/VHDL/HW/HW2/code/ram.vhdl|
 Z54 !s107 C:/Users/mohammad javad/Desktop/uni/arshad tehran university/term 2/VHDL/HW/HW2/code/ram.vhdl|
 R11
@@ -544,7 +544,7 @@ L4
 V2`b?c4eion0[OBGYKXU?U2
 R7
 32
-Z58 !s108 1714159452.851000
+Z58 !s108 1714159933.408000
 Z59 !s90 -reportprogress|300|-work|work|-2002|-explicit|C:/Users/mohammad javad/Desktop/uni/arshad tehran university/term 2/VHDL/HW/HW2/code/relu.vhdl|
 Z60 !s107 C:/Users/mohammad javad/Desktop/uni/arshad tehran university/term 2/VHDL/HW/HW2/code/relu.vhdl|
 R11
@@ -579,7 +579,7 @@ L4
 V1EgCgQUe3AU`>I2[>NS231
 R7
 32
-Z64 !s108 1714159452.883000
+Z64 !s108 1714159933.440000
 Z65 !s90 -reportprogress|300|-work|work|-2002|-explicit|C:/Users/mohammad javad/Desktop/uni/arshad tehran university/term 2/VHDL/HW/HW2/code/resualt.vhdl|
 Z66 !s107 C:/Users/mohammad javad/Desktop/uni/arshad tehran university/term 2/VHDL/HW/HW2/code/resualt.vhdl|
 R11
@@ -616,7 +616,7 @@ VB6JRKX>U3F7^SJc39KAPS0
 R7
 32
 !i10b 1
-Z70 !s108 1714159452.946000
+Z70 !s108 1714159933.519000
 Z71 !s90 -reportprogress|300|-work|work|-2002|-explicit|C:/Users/mohammad javad/Desktop/uni/arshad tehran university/term 2/VHDL/HW/HW2/code/testbench.vhdl|
 Z72 !s107 C:/Users/mohammad javad/Desktop/uni/arshad tehran university/term 2/VHDL/HW/HW2/code/testbench.vhdl|
 R11
