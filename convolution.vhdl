@@ -45,7 +45,7 @@ BEGIN
 
     counter_j : ENTITY work.counter(behavioral)
         GENERIC MAP(data_width, 3)
-        PORT MAP(clk, rst, cnt_i_cout, counter_j_out, counter_j_cout);
+        PORT MAP(clk, rst, en_ctj, counter_j_out, counter_j_cout);
 
     counter_x : ENTITY work.counter(behavioral)
         GENERIC MAP(data_width, 2)
@@ -53,7 +53,7 @@ BEGIN
 
     counter_y : ENTITY work.counter(behavioral)
         GENERIC MAP(data_width, 2)
-        PORT MAP(clk, rst, cnt_x_cout, counter_y_out, counter_y_cout);
+        PORT MAP(clk, rst, en_cty, counter_y_out, counter_y_cout);
 
     adder_mux_1 : ENTITY work.mux(behavioral)
         GENERIC MAP(data_width)
@@ -153,7 +153,7 @@ BEGIN
         END IF;
     END PROCESS;
 
-    PROCESS (pstate, start, counter_j_cout, counter_y_cout, counter_y_out, counter_x_out) BEGIN
+    PROCESS (pstate, start, counter_j_cout, counter_i_cout, counter_y_cout, counter_x_cout, counter_y_out, counter_x_out) BEGIN
         en_cti <= '0';
         done <= '0';
         en_ctj <= '0';
@@ -215,6 +215,7 @@ BEGIN
                 adder_mux_2_sel <= "10";
                 temp_reg_en <= '1';
                 en_cti <= '1';
+                en_ctj <= counter_i_cout;
                 IF counter_j_cout = '1' THEN
                     nstate <= add_bias;
                 ELSE
@@ -244,6 +245,7 @@ BEGIN
                     nstate <= adr_gen1;
                 END IF;
                 en_ctx <= '1';
+                en_cty <= counter_x_cout;
 
             WHEN done_state =>
                 done <= '1';
