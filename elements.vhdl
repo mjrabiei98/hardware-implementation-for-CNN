@@ -75,7 +75,7 @@ END ENTITY adder;
 ARCHITECTURE behavioral OF adder IS
 BEGIN
 
-    output <= STD_LOGIC_VECTOR(unsigned(a) + unsigned(b));
+    output <= STD_LOGIC_VECTOR(signed(a) + signed(b));
 
 END behavioral; -- behavioral
 -------------
@@ -98,7 +98,7 @@ ARCHITECTURE behavioral OF mult IS
 
 BEGIN
 
-    temp <= STD_LOGIC_VECTOR(unsigned(a) * unsigned(b));
+    temp <= STD_LOGIC_VECTOR(signed(a) * signed(b));
     output <= temp(input_size - 1 DOWNTO 0);
 END behavioral; -- behavioral
 -----------

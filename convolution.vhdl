@@ -25,7 +25,7 @@ ENTITY convolution_datapath IS
         SIGNAL adder_mux_1_sel : IN STD_LOGIC_VECTOR(1 DOWNTO 0);
         SIGNAL adder_mux_2_sel : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
         SIGNAL adr_reg_mux_sel, mult_mux_1_sel, mult_mux_2_sel : IN STD_LOGIC_VECTOR(1 DOWNTO 0);
-        SIGNAL cx_out, cy_out : OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
+        SIGNAL cx_out, cy_out, ci_out, cj_out : OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
         SIGNAL address_out : OUT STD_LOGIC_VECTOR(data_width - 1 DOWNTO 0)
     );
 END ENTITY convolution_datapath;
@@ -41,6 +41,8 @@ BEGIN
     address_out <= address_reg_out;
     cx_out <= counter_x_out;
     cy_out <= counter_y_out;
+    ci_out <= counter_i_out;
+    cj_out <= counter_j_out;
     counter_i_cout <= cnt_i_cout;
     counter_x_cout <= cnt_x_cout;
     counter_i : ENTITY work.counter(behavioral)
@@ -134,7 +136,7 @@ ENTITY convolution_controller IS
         SIGNAL adder_mux_1_sel : OUT STD_LOGIC_VECTOR(1 DOWNTO 0);
         SIGNAL adder_mux_2_sel : OUT STD_LOGIC_VECTOR(2 DOWNTO 0);
         SIGNAL adr_reg_mux_sel, mult_mux_1_sel, mult_mux_2_sel : OUT STD_LOGIC_VECTOR(1 DOWNTO 0);
-        SIGNAL counter_x_out, counter_y_out : IN STD_LOGIC_VECTOR(7 DOWNTO 0);
+        SIGNAL counter_x_out, counter_y_out, counter_i_out, counter_j_out : IN STD_LOGIC_VECTOR(7 DOWNTO 0);
         SIGNAL done : OUT STD_LOGIC
     );
 END ENTITY convolution_controller;
@@ -143,7 +145,7 @@ ARCHITECTURE behavioral OF convolution_controller IS
 
     TYPE state IS (
         idle, adr_gen1, adr_gen2, adr_gen3,
-        adr_gen4, kerlent_mult, add_bias, load_output, done_state
+        adr_gen4, kerlent_mult, add_bias, load_output, done_state, stable
     );
 
     SIGNAL pstate, nstate : state := idle;
@@ -159,7 +161,7 @@ BEGIN
         END IF;
     END PROCESS;
 
-    PROCESS (pstate, start, counter_j_cout, counter_i_cout, counter_y_cout, counter_x_cout, counter_y_out, counter_x_out) BEGIN
+    PROCESS (pstate, start, counter_j_out, counter_i_out, counter_x_cout, counter_y_out, counter_x_out) BEGIN
         en_cti <= '0';
         done <= '0';
         en_ctj <= '0';
@@ -221,8 +223,14 @@ BEGIN
                 adder_mux_2_sel <= "010";
                 temp_reg_en <= '1';
                 en_cti <= '1';
-                en_ctj <= counter_i_cout;
-                IF counter_j_cout = '1' THEN
+
+                IF counter_i_out = "00000010" THEN
+                    en_ctj <= '1';
+                END IF;
+                nstate <= stable;
+
+            WHEN stable =>
+                IF counter_j_out = "00000010" and counter_i_out = "00000010" THEN
                     nstate <= add_bias;
                 ELSE
                     nstate <= adr_gen1;
@@ -230,7 +238,7 @@ BEGIN
 
             WHEN add_bias =>
                 nstate <= load_output;
-                adder_mux_1_sel <= "01";
+                adder_mux_1_sel <= "10";
                 adder_mux_2_sel <= "100";
                 adr_reg_mux_sel <= "00";
                 temp_reg_en <= '1';
@@ -245,7 +253,7 @@ BEGIN
                 ELSIF counter_y_out = "00000001" AND counter_x_out = "00000001" THEN
                     out4_reg_en <= '1';
                 END IF;
-                IF counter_y_cout = '1' THEN
+                IF counter_y_out = "00000001" THEN
                     nstate <= done_state;
                 ELSE
                     nstate <= adr_gen1;
@@ -293,7 +301,7 @@ ARCHITECTURE modular OF convolution IS
     SIGNAL adder_mux_1_sel : STD_LOGIC_VECTOR(1 DOWNTO 0);
     SIGNAL adder_mux_2_sel : STD_LOGIC_VECTOR(2 DOWNTO 0);
     SIGNAL adr_reg_mux_sel, mult_mux_1_sel, mult_mux_2_sel : STD_LOGIC_VECTOR(1 DOWNTO 0);
-    SIGNAL counter_x_out, counter_y_out : STD_LOGIC_VECTOR(7 DOWNTO 0);
+    SIGNAL counter_x_out, counter_y_out, counter_i_out, counter_j_out : STD_LOGIC_VECTOR(7 DOWNTO 0);
 
 BEGIN
 
@@ -308,14 +316,14 @@ BEGIN
             data_out1, data_out2, data_out3, data_out4,
             counter_i_cout, counter_j_cout, counter_x_cout, counter_y_cout,
             adder_mux_1_sel, adder_mux_2_sel, adr_reg_mux_sel, mult_mux_1_sel, mult_mux_2_sel,
-            counter_x_out, counter_y_out,address_out
+            counter_x_out, counter_y_out, counter_i_out, counter_j_out, address_out
         );
     controller : ENTITY work.convolution_controller(behavioral)
         PORT MAP(
             clk, rst, start, en_cti, en_ctj, en_ctx, en_cty, temp_reg_en, address_reg_en, out1_reg_en, out2_reg_en, out3_reg_en, out4_reg_en,
             counter_i_cout, counter_j_cout, counter_x_cout, counter_y_cout,
             adder_mux_1_sel, adder_mux_2_sel, adr_reg_mux_sel, mult_mux_1_sel, mult_mux_2_sel,
-            counter_x_out, counter_y_out,
+            counter_x_out, counter_y_out, counter_i_out, counter_j_out,
             done
         );
 
