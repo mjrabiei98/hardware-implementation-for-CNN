@@ -170,3 +170,33 @@ BEGIN
         END IF;
     END PROCESS;
 END behavioral; -- behavioral
+
+
+-----------
+
+LIBRARY IEEE;
+USE IEEE.STD_LOGIC_1164.ALL;
+USE IEEE.NUMERIC_STD.ALL;
+ENTITY mux_5to1 IS
+    GENERIC (
+        input_size : INTEGER := 8
+    );
+    PORT (
+        a, b, c, d, e : IN STD_LOGIC_VECTOR(input_size - 1 DOWNTO 0);
+        sel : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
+        output : OUT STD_LOGIC_VECTOR(input_size - 1 DOWNTO 0)
+    );
+END ENTITY mux_5to1;
+
+ARCHITECTURE behavioral OF mux_5to1 IS
+
+BEGIN
+    WITH sel SELECT
+        output <= a WHEN "000",
+        b WHEN "001",
+        c WHEN "010",
+        d WHEN "011",
+        d WHEN "100",
+        a WHEN OTHERS;
+
+END behavioral; -- behavioral

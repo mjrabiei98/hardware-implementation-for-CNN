@@ -22,7 +22,9 @@ ENTITY convolution_datapath IS
         SIGNAL data_in : IN STD_LOGIC_VECTOR(data_width - 1 DOWNTO 0);
         SIGNAL data_out1, data_out2, data_out3, data_out4 : OUT STD_LOGIC_VECTOR(data_width - 1 DOWNTO 0);
         SIGNAL counter_i_cout, counter_j_cout, counter_x_cout, counter_y_cout : OUT STD_LOGIC;
-        SIGNAL adder_mux_1_sel, adder_mux_2_sel, adr_reg_mux_sel, mult_mux_1_sel, mult_mux_2_sel : IN STD_LOGIC_VECTOR(1 DOWNTO 0);
+        SIGNAL adder_mux_1_sel : IN STD_LOGIC_VECTOR(1 DOWNTO 0);
+        signal adder_mux_2_sel : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
+        signal adr_reg_mux_sel, mult_mux_1_sel, mult_mux_2_sel : IN STD_LOGIC_VECTOR(1 DOWNTO 0);
         SIGNAL cx_out, cy_out : OUT STD_LOGIC_VECTOR(7 DOWNTO 0)
     );
 END ENTITY convolution_datapath;
@@ -59,9 +61,9 @@ BEGIN
         GENERIC MAP(data_width)
         PORT MAP(bias_value, counter_j_out, temp_reg_out, address_reg_out, adder_mux_1_sel, adder_mux_1_out);
 
-    adder_mux_2 : ENTITY work.mux(behavioral)
+    adder_mux_2 : ENTITY work.mux_5to1(behavioral)
         GENERIC MAP(data_width)
-        PORT MAP(counter_x_out, counter_y_out, mult_out, counter_i_out, adder_mux_2_sel, adder_mux_2_out);
+        PORT MAP(counter_x_out, counter_y_out, mult_out, counter_i_out, bias_value, adder_mux_2_sel, adder_mux_2_out);
 
     adr : ENTITY work.adder(behavioral)
         GENERIC MAP(8)
@@ -127,7 +129,9 @@ ENTITY convolution_controller IS
         SIGNAL clk, rst, start : IN STD_LOGIC;
         SIGNAL en_cti, en_ctj, en_ctx, en_cty, temp_reg_en, address_reg_en, out1_reg_en, out2_reg_en, out3_reg_en, out4_reg_en : OUT STD_LOGIC;
         SIGNAL counter_i_cout, counter_j_cout, counter_x_cout, counter_y_cout : IN STD_LOGIC;
-        SIGNAL adder_mux_1_sel, adder_mux_2_sel, adr_reg_mux_sel, mult_mux_1_sel, mult_mux_2_sel : OUT STD_LOGIC_VECTOR(1 DOWNTO 0);
+        SIGNAL adder_mux_1_sel: OUT STD_LOGIC_VECTOR(1 DOWNTO 0);
+        signal adder_mux_2_sel: OUT STD_LOGIC_VECTOR(2 DOWNTO 0);
+        signal adr_reg_mux_sel, mult_mux_1_sel, mult_mux_2_sel : OUT STD_LOGIC_VECTOR(1 DOWNTO 0);
         SIGNAL counter_x_out, counter_y_out : IN STD_LOGIC_VECTOR(7 DOWNTO 0);
         SIGNAL done : OUT STD_LOGIC
     );
@@ -166,7 +170,7 @@ BEGIN
         out3_reg_en <= '0';
         out4_reg_en <= '0';
         adder_mux_1_sel <= "00";
-        adder_mux_2_sel <= "00";
+        adder_mux_2_sel <= "000";
         adr_reg_mux_sel <= "00";
         mult_mux_1_sel <= "00";
         mult_mux_2_sel <= "00";
@@ -183,7 +187,7 @@ BEGIN
             WHEN adr_gen1 =>
                 nstate <= adr_gen2;
                 adder_mux_1_sel <= "01";
-                adder_mux_2_sel <= "01";
+                adder_mux_2_sel <= "001";
                 adr_reg_mux_sel <= "00";
                 address_reg_en <= '1';
 
@@ -197,14 +201,14 @@ BEGIN
             WHEN adr_gen3 =>
                 nstate <= adr_gen4;
                 adder_mux_1_sel <= "11";
-                adder_mux_2_sel <= "00";
+                adder_mux_2_sel <= "000";
                 adr_reg_mux_sel <= "00";
                 address_reg_en <= '1';
 
             WHEN adr_gen4 =>
                 nstate <= kerlent_mult;
                 adder_mux_1_sel <= "11";
-                adder_mux_2_sel <= "11";
+                adder_mux_2_sel <= "011";
                 adr_reg_mux_sel <= "00";
                 address_reg_en <= '1';
 
@@ -212,7 +216,7 @@ BEGIN
                 mult_mux_1_sel <= "01";
                 mult_mux_2_sel <= "01";
                 adder_mux_1_sel <= "10";
-                adder_mux_2_sel <= "10";
+                adder_mux_2_sel <= "010";
                 temp_reg_en <= '1';
                 en_cti <= '1';
                 en_ctj <= counter_i_cout;
@@ -224,10 +228,10 @@ BEGIN
 
             WHEN add_bias =>
                 nstate <= load_output;
-                -- adder_mux_1_sel = "00";
-                -- adder_mux_2_sel = "11";
-                -- adr_reg_mux_sel = "00";
-                -- temp_reg_en <= '1';
+                adder_mux_1_sel <= "01";
+                adder_mux_2_sel <= "100";
+                adr_reg_mux_sel <= "00";
+                temp_reg_en <= '1';
 
             WHEN load_output =>
                 IF counter_y_out = "00000000" AND counter_x_out = "00000000" THEN
@@ -283,7 +287,9 @@ ARCHITECTURE modular OF convolution IS
 
     SIGNAL en_cti, en_ctj, en_ctx, en_cty, temp_reg_en, address_reg_en, out1_reg_en, out2_reg_en, out3_reg_en, out4_reg_en : STD_LOGIC;
     SIGNAL counter_i_cout, counter_j_cout, counter_x_cout, counter_y_cout : STD_LOGIC;
-    SIGNAL adder_mux_1_sel, adder_mux_2_sel, adr_reg_mux_sel, mult_mux_1_sel, mult_mux_2_sel : STD_LOGIC_VECTOR(1 DOWNTO 0);
+    SIGNAL adder_mux_1_sel: STD_LOGIC_VECTOR(1 DOWNTO 0);
+    signal adder_mux_2_sel: STD_LOGIC_VECTOR(2 DOWNTO 0);
+    signal adr_reg_mux_sel, mult_mux_1_sel, mult_mux_2_sel : STD_LOGIC_VECTOR(1 DOWNTO 0);
     SIGNAL counter_x_out, counter_y_out : STD_LOGIC_VECTOR(7 DOWNTO 0);
 
 BEGIN
