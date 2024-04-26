@@ -11,7 +11,7 @@ ENTITY ram IS
     PORT (
         rst : IN STD_LOGIC;
         data_in : IN STD_LOGIC_VECTOR(DATA_WIDTH - 1 DOWNTO 0);
-        address_in_wr, address_in_read : IN STD_LOGIC_VECTOR(3 DOWNTO 0);
+        address_in_wr, address_in_read : IN STD_LOGIC_VECTOR(data_width-1 DOWNTO 0);
         write_en, read_en : IN STD_LOGIC;
         data_out : OUT STD_LOGIC_VECTOR(DATA_WIDTH - 1 DOWNTO 0));
 END ENTITY ram;

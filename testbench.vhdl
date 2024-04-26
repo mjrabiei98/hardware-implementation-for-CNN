@@ -9,7 +9,7 @@ ARCHITECTURE tb OF testbench IS
     SIGNAL rst : STD_LOGIC := '0';
     SIGNAL write_ram : STD_LOGIC;
     SIGNAL data_in : STD_LOGIC_VECTOR(7 DOWNTO 0);
-    SIGNAL address_in_wr : STD_LOGIC_VECTOR(3 DOWNTO 0);
+    SIGNAL address_in_wr : STD_LOGIC_VECTOR(7 DOWNTO 0);
     SIGNAL done : STD_LOGIC;
     SIGNAL output_pattern : STD_LOGIC_VECTOR(2 DOWNTO 0);
 BEGIN
