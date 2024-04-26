@@ -32,25 +32,28 @@ ARCHITECTURE modular OF convolution_datapath IS
     SIGNAL counter_i_out, counter_j_out, counter_x_out, counter_y_out, kernel_mux_out : STD_LOGIC_VECTOR(data_width - 1 DOWNTO 0);
     SIGNAL adder_mux_1_out, adder_mux_2_out, adr_reg_mux_out : STD_LOGIC_VECTOR(data_width - 1 DOWNTO 0);
     SIGNAL mult_out, adder_out, address_reg_out, mult_mux_1_out, mult_mux_2_out, temp_reg_out : STD_LOGIC_VECTOR(data_width - 1 DOWNTO 0);
+    SIGNAL cnt_i_cout, cnt_x_cout : STD_LOGIC;
 
 BEGIN
     cx_out <= counter_x_out;
     cy_out <= counter_y_out;
+    counter_i_cout <= cnt_i_cout;
+    counter_x_cout <= cnt_x_cout;
     counter_i : ENTITY work.counter(behavioral)
         GENERIC MAP(data_width, 3)
-        PORT MAP(clk, rst, en_cti, counter_i_out, counter_i_cout);
+        PORT MAP(clk, rst, en_cti, counter_i_out, cnt_i_cout);
 
     counter_j : ENTITY work.counter(behavioral)
         GENERIC MAP(data_width, 3)
-        PORT MAP(clk, rst, en_ctj, counter_j_out, counter_j_cout);
+        PORT MAP(clk, rst, cnt_i_cout, counter_j_out, counter_j_cout);
 
     counter_x : ENTITY work.counter(behavioral)
         GENERIC MAP(data_width, 2)
-        PORT MAP(clk, rst, en_ctx, counter_x_out, counter_x_cout);
+        PORT MAP(clk, rst, en_ctx, counter_x_out, cnt_x_cout);
 
     counter_y : ENTITY work.counter(behavioral)
         GENERIC MAP(data_width, 2)
-        PORT MAP(clk, rst, en_cty, counter_y_out, counter_y_cout);
+        PORT MAP(clk, rst, cnt_x_cout, counter_y_out, counter_y_cout);
 
     adder_mux_1 : ENTITY work.mux(behavioral)
         GENERIC MAP(data_width)
@@ -63,6 +66,10 @@ BEGIN
     adr : ENTITY work.adder(behavioral)
         GENERIC MAP(8)
         PORT MAP(adder_mux_1_out, adder_mux_2_out, adder_out);
+
+    mult : ENTITY work.mult(behavioral)
+        GENERIC MAP(8)
+        PORT MAP(mult_mux_1_out, mult_mux_2_out, mult_out);
 
     mult_mux_1 : ENTITY work.mux(behavioral)
         GENERIC MAP(data_width)
@@ -148,6 +155,7 @@ BEGIN
 
     PROCESS (pstate, start, counter_j_cout, counter_y_cout, counter_y_out, counter_x_out) BEGIN
         en_cti <= '0';
+        done <= '0';
         en_ctj <= '0';
         en_ctx <= '0';
         en_cty <= '0';
