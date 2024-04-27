@@ -15,7 +15,7 @@ ARCHITECTURE tb OF testbench IS
 BEGIN
 
     p_finder : ENTITY work.patter_finder(behavioral)
-        GENERIC MAP(8, 3)
+        GENERIC MAP(8, 3, 3)
         PORT MAP(
             start, clk, rst, write_ram,
             data_in, address_in_wr, done,

@@ -4,7 +4,8 @@ USE IEEE.STD_LOGIC_1164.ALL;
 ENTITY patter_finder IS
     GENERIC (
         data_width : INTEGER := 8;
-        number_of_conv : INTEGER := 3
+        number_of_conv : INTEGER := 3;
+        kernel_size : INTEGER := 3
     );
     PORT (
         start, clk, rst, write_ram : IN STD_LOGIC;
@@ -26,7 +27,13 @@ ARCHITECTURE behavioral OF patter_finder IS
     SIGNAL relu2_data_out1, relu2_data_out2, relu2_data_out3, relu2_data_out4 : STD_LOGIC_VECTOR(data_width - 1 DOWNTO 0);
     SIGNAL relu3_data_out1, relu3_data_out2, relu3_data_out3, relu3_data_out4 : STD_LOGIC_VECTOR(data_width - 1 DOWNTO 0);
     SIGNAL maxpool1_out, maxpool2_out, maxpool3_out : STD_LOGIC_VECTOR(data_width - 1 DOWNTO 0);
-    signal address_out : std_logic_vector(data_width - 1 downto 0);
+    SIGNAL address_out : STD_LOGIC_VECTOR(data_width - 1 DOWNTO 0);
+    TYPE conv_ouput IS ARRAY (0 TO number_of_conv - 1, 0 TO 3) OF STD_LOGIC_VECTOR(DATA_WIDTH - 1 DOWNTO 0);
+    SIGNAL convs_ouput : conv_ouput;
+    TYPE relu_out IS ARRAY (0 TO number_of_conv - 1, 0 TO 3) OF STD_LOGIC_VECTOR(DATA_WIDTH - 1 DOWNTO 0);
+    SIGNAL relus_out : relu_out;
+    TYPE maxpool_out IS ARRAY (0 TO number_of_conv - 1) OF STD_LOGIC_VECTOR(DATA_WIDTH - 1 DOWNTO 0);
+    SIGNAL maxpools_out : maxpool_out;
 BEGIN
     ram1 : ENTITY work.ram(behavioral)
         GENERIC MAP(8, 16)
@@ -37,13 +44,31 @@ BEGIN
             write_en, read_en,
             ram_data_out
         );
+
     -- component
-    -- conv2to0 : FOR i IN 1 TO number_of_conv GENERATE
-    -- BEGIN
-    --     conv_i : ENTITY work.convolution(behavioral)
-    --         GENERIC MAP()
-    --         PORT MAP();
-    -- END GENERATE;
+    conv : FOR i IN 0 TO number_of_conv - 1 GENERATE
+    BEGIN
+        conv_i : ENTITY work.convolution(modular)
+            GENERIC MAP(
+                "11111111", "00000100", 8, "00000000", "00000001", "00000000",
+                "00000001", "00000001", "00000001", "00000000", "00000001", "00000000"
+            )
+            PORT MAP(
+                clk, rst, start, ram_data_out, convs_ouput(i, 0), convs_ouput(i, 1), convs_ouput(i, 2), convs_ouput(i, 3), done, address_out
+            );
+        relui : ENTITY work.relu(behavioral)
+            GENERIC MAP(8)
+            PORT MAP(
+                convs_ouput(i, 0), convs_ouput(i, 1), convs_ouput(i, 2), convs_ouput(i, 3),
+                relus_out(i, 0), relus_out(i, 1), relus_out(i, 2), relus_out(i, 3)
+            );
+        maxi : ENTITY work.maxpool(behavioral)
+            GENERIC MAP(8)
+            PORT MAP(
+                relus_out(i, 0), relus_out(i, 1), relus_out(i, 2), relus_out(i, 3), maxpools_out(i)
+            );
+
+    END GENERATE;
 
     conv1 : ENTITY work.convolution(modular)
         GENERIC MAP(
@@ -110,12 +135,16 @@ BEGIN
         PORT MAP(
             relu3_data_out1, relu3_data_out2, relu3_data_out3, relu3_data_out4, maxpool3_out
         );
-
-
     res : ENTITY work.resualt(behavioral)
         GENERIC MAP(8)
         PORT MAP(
             maxpool1_out, maxpool2_out, maxpool3_out, output_pattern
         );
+
+    -- res2 : ENTITY work.resualt(behavioral)
+    --     GENERIC MAP(8)
+    --     PORT MAP(
+    --         maxpools_out(0), maxpools_out(1), maxpools_out(2), output_pattern
+    --     );
 
 END behavioral; -- behavioral
