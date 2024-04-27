@@ -11,9 +11,9 @@ END ENTITY reg;
 
 ARCHITECTURE behavioral OF reg IS
 BEGIN
-    PROCESS (clk, rst)
+    PROCESS (clk)
     BEGIN
-        IF rst = '1' THEN
+        IF (clk = '1' AND clk'event and rst = '1') THEN
             q <= (OTHERS => '0');
         ELSIF (clk = '1' AND clk'event and en = '1') THEN
             q <= d;
