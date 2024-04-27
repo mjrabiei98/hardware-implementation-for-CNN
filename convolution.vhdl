@@ -147,7 +147,7 @@ ARCHITECTURE behavioral OF convolution_controller IS
 
     TYPE state IS (
         idle, adr_gen1, adr_gen2, adr_gen3,
-        adr_gen4, kerlent_mult, add_bias, load_output, done_state, stable
+        adr_gen4, kerlent_mult, add_bias, load_output, done_state, stable, stable2
     );
 
     SIGNAL pstate, nstate : state := idle;
@@ -163,7 +163,7 @@ BEGIN
         END IF;
     END PROCESS;
 
-    PROCESS (pstate, start, counter_j_out, counter_i_out, counter_y_out, counter_x_out) BEGIN
+    PROCESS (pstate, start, counter_j_out, counter_i_out, counter_y_cout, counter_y_out, counter_x_out) BEGIN
         en_cti <= '0';
         done <= '0';
         en_ctj <= '0';
@@ -257,16 +257,19 @@ BEGIN
                 ELSIF counter_y_out = "00000001" AND counter_x_out = "00000001" THEN
                     out4_reg_en <= '1';
                 END IF;
-                IF counter_y_out = "00000001" THEN
-                    nstate <= done_state;
-                ELSE
-                    nstate <= adr_gen1;
-                END IF;
                 en_ctx <= '1';
                 IF counter_x_out = "00000001" THEN
                     en_cty <= '1';
                 END IF;
                 rst_temp <= '1';
+                nstate <= stable2;
+
+            WHEN stable2 =>
+                IF counter_y_cout = '1' THEN
+                    nstate <= done_state;
+                ELSE
+                    nstate <= adr_gen1;
+                END IF;
 
             WHEN done_state =>
                 done <= '1';

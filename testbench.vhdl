@@ -22,7 +22,7 @@ BEGIN
             output_pattern
         );
 
-    clk <= NOT clk AFTER 5 ns WHEN now <= 3000 ns ELSE
+    clk <= NOT clk AFTER 5 ns WHEN now <= 5000 ns ELSE
         '0';
 
     PROCESS
@@ -35,7 +35,7 @@ BEGIN
         start <= '1';
         WAIT FOR 10 ns;
         start <= '0';
-        WAIT FOR 3000 ns;
+        WAIT FOR 5000 ns;
         std.env.stop; -- or std.env.stop;
     END PROCESS;
 
