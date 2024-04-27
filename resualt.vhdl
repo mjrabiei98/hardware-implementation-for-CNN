@@ -17,15 +17,15 @@ BEGIN
     BEGIN
         output <= "000";
 
-        IF a = "00000001" THEN
+        IF a > b and a > c THEN
             output <= "001";
         END IF;
 
-        IF a = "00000010" THEN
+        IF b > a and b > c THEN
             output <= "010";
         END IF;
 
-        IF a = "00000011" THEN
+        IF c > b and c > a THEN
             output <= "100";
         END IF;
 

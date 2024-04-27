@@ -56,8 +56,8 @@ BEGIN
 
     conv2 : ENTITY work.convolution(modular)
         GENERIC MAP(
-            "00000000", "00000100", 8, "00000000", "00000001", "00000000",
-            "00000001", "00000001", "00000001", "00000000", "00000001", "00000000"
+            "11111110", "00000100", 8, "00000001", "00000001", "00000001",
+            "00000001", "00000000", "00000000", "00000001", "00000001", "00000001"
         )
         PORT MAP(
             clk, rst, start, ram_data_out, conv2_data_out1, conv2_data_out2, conv2_data_out3, conv2_data_out4, done, address_out
@@ -65,8 +65,8 @@ BEGIN
 
     conv3 : ENTITY work.convolution(modular)
         GENERIC MAP(
-            "00000000", "00000100", 8, "00000000", "00000001", "00000000",
-            "00000001", "00000001", "00000001", "00000000", "00000001", "00000000"
+            "00000000", "00000100", 8, "00000001", "00000001", "00000001",
+            "00000000", "00000001", "00000000", "00000000", "00000001", "00000000"
         )
         PORT MAP(
             clk, rst, start, ram_data_out, conv3_data_out1, conv3_data_out2, conv3_data_out3, conv3_data_out4, done, address_out
