@@ -1,9 +1,3 @@
-LIBRARY IEEE;
-USE IEEE.STD_LOGIC_1164.ALL;
-PACKAGE generic_array_type IS
-    TYPE kernel_array IS ARRAY (0 TO 2, 0 TO 8) OF STD_LOGIC_VECTOR(7 DOWNTO 0);
-    TYPE bias_array IS ARRAY (0 TO 2) OF STD_LOGIC_VECTOR(7 DOWNTO 0);
-END PACKAGE generic_array_type;
 
 LIBRARY IEEE;
 USE IEEE.std_logic_1164.ALL;

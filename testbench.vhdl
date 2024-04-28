@@ -14,7 +14,7 @@ ARCHITECTURE tb OF testbench IS
     SIGNAL output_pattern : STD_LOGIC_VECTOR(2 DOWNTO 0);
 BEGIN
 
-    p_finder : ENTITY work.patter_finder(behavioral)
+    p_finder : entity work.patter_finder(configurable)
         GENERIC MAP(8, 3, 3,
         ((
         "00000000", "00000001", "00000000",
