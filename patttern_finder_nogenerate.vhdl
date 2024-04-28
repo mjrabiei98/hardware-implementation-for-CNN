@@ -1,11 +1,10 @@
+
 LIBRARY IEEE;
 USE IEEE.STD_LOGIC_1164.ALL;
 PACKAGE generic_array_type IS
     TYPE kernel_array IS ARRAY (0 TO 2, 0 TO 8) OF STD_LOGIC_VECTOR(7 DOWNTO 0);
     TYPE bias_array IS ARRAY (0 TO 2) OF STD_LOGIC_VECTOR(7 DOWNTO 0);
 END PACKAGE generic_array_type;
-
-
 LIBRARY IEEE;
 USE IEEE.STD_LOGIC_1164.ALL;
 USE work.generic_array_type.ALL;
@@ -43,6 +42,14 @@ END ENTITY patter_finder;
 ARCHITECTURE behavioral OF patter_finder IS
     SIGNAL ram_data_out : STD_LOGIC_VECTOR(DATA_WIDTH - 1 DOWNTO 0);
     SIGNAL write_en, read_en : STD_LOGIC;
+    SIGNAL conv1_data_out1, conv1_data_out2, conv1_data_out3, conv1_data_out4 : STD_LOGIC_VECTOR(data_width - 1 DOWNTO 0);
+    SIGNAL conv2_data_out1, conv2_data_out2, conv2_data_out3, conv2_data_out4 : STD_LOGIC_VECTOR(data_width - 1 DOWNTO 0);
+    SIGNAL conv3_data_out1, conv3_data_out2, conv3_data_out3, conv3_data_out4 : STD_LOGIC_VECTOR(data_width - 1 DOWNTO 0);
+
+    SIGNAL relu1_data_out1, relu1_data_out2, relu1_data_out3, relu1_data_out4 : STD_LOGIC_VECTOR(data_width - 1 DOWNTO 0);
+    SIGNAL relu2_data_out1, relu2_data_out2, relu2_data_out3, relu2_data_out4 : STD_LOGIC_VECTOR(data_width - 1 DOWNTO 0);
+    SIGNAL relu3_data_out1, relu3_data_out2, relu3_data_out3, relu3_data_out4 : STD_LOGIC_VECTOR(data_width - 1 DOWNTO 0);
+    SIGNAL maxpool1_out, maxpool2_out, maxpool3_out : STD_LOGIC_VECTOR(data_width - 1 DOWNTO 0);
     SIGNAL address_out : STD_LOGIC_VECTOR(data_width - 1 DOWNTO 0);
     TYPE conv_ouput IS ARRAY (0 TO number_of_conv - 1, 0 TO 3) OF STD_LOGIC_VECTOR(DATA_WIDTH - 1 DOWNTO 0);
     SIGNAL convs_ouput : conv_ouput;
@@ -85,6 +92,77 @@ BEGIN
             );
 
     END GENERATE;
+
+    conv1 : ENTITY work.convolution(modular)
+        GENERIC MAP(
+            "11111111", "00000100", 8, "00000000", "00000001", "00000000",
+            "00000001", "00000001", "00000001", "00000000", "00000001", "00000000"
+        )
+        PORT MAP(
+            clk, rst, start, ram_data_out, conv1_data_out1, conv1_data_out2, conv1_data_out3, conv1_data_out4, done, address_out
+        );
+
+    conv2 : ENTITY work.convolution(modular)
+        GENERIC MAP(
+            "11111110", "00000100", 8, "00000001", "00000001", "00000001",
+            "00000001", "00000000", "00000000", "00000001", "00000001", "00000001"
+        )
+        PORT MAP(
+            clk, rst, start, ram_data_out, conv2_data_out1, conv2_data_out2, conv2_data_out3, conv2_data_out4, done, address_out
+        );
+
+    conv3 : ENTITY work.convolution(modular)
+        GENERIC MAP(
+            "00000000", "00000100", 8, "00000001", "00000001", "00000001",
+            "00000000", "00000001", "00000000", "00000000", "00000001", "00000000"
+        )
+        PORT MAP(
+            clk, rst, start, ram_data_out, conv3_data_out1, conv3_data_out2, conv3_data_out3, conv3_data_out4, done, address_out
+        );
+
+    relu1 : ENTITY work.relu(behavioral)
+        GENERIC MAP(8)
+        PORT MAP(
+            conv1_data_out1, conv1_data_out2, conv1_data_out3, conv1_data_out4,
+            relu1_data_out1, relu1_data_out2, relu1_data_out3, relu1_data_out4
+        );
+
+    relu2 : ENTITY work.relu(behavioral)
+        GENERIC MAP(8)
+        PORT MAP(
+            conv2_data_out1, conv2_data_out2, conv2_data_out3, conv2_data_out4,
+            relu2_data_out1, relu2_data_out2, relu2_data_out3, relu2_data_out4
+        );
+
+    relu3 : ENTITY work.relu(behavioral)
+        GENERIC MAP(8)
+        PORT MAP(
+            conv3_data_out1, conv3_data_out2, conv3_data_out3, conv3_data_out4,
+            relu3_data_out1, relu3_data_out2, relu3_data_out3, relu3_data_out4
+        );
+
+    max1 : ENTITY work.maxpool(behavioral)
+        GENERIC MAP(8)
+        PORT MAP(
+            relu1_data_out1, relu1_data_out2, relu1_data_out3, relu1_data_out4, maxpool1_out
+        );
+
+    max2 : ENTITY work.maxpool(behavioral)
+        GENERIC MAP(8)
+        PORT MAP(
+            relu2_data_out1, relu2_data_out2, relu2_data_out3, relu2_data_out4, maxpool2_out
+        );
+
+    max3 : ENTITY work.maxpool(behavioral)
+        GENERIC MAP(8)
+        PORT MAP(
+            relu3_data_out1, relu3_data_out2, relu3_data_out3, relu3_data_out4, maxpool3_out
+        );
+    -- res : ENTITY work.resualt(behavioral)
+    --     GENERIC MAP(8)
+    --     PORT MAP(
+    --         maxpool1_out, maxpool2_out, maxpool3_out, output_pattern
+    --     );
 
     res2 : ENTITY work.resualt(behavioral)
         GENERIC MAP(8)
