@@ -1,5 +1,6 @@
 LIBRARY IEEE;
 USE IEEE.STD_LOGIC_1164.ALL;
+USE ieee.numeric_std.ALL;
 
 ENTITY relu IS
     GENERIC (
@@ -13,32 +14,32 @@ END ENTITY relu;
 
 ARCHITECTURE behavioral OF relu IS
 BEGIN
-    PROCESS (a,b,c,d)
+    PROCESS (a, b, c, d)
     BEGIN
-        
-        if a < "00000000" then
-            d1 <= (others => '0');
-        else
-            d1 <= a; 
-        end if;
 
-        if b < "00000000" then
-            d2 <= (others => '0');
-        else
-            d2 <= b; 
-        end if;
+        IF signed(a) < 0 THEN
+            d1 <= (OTHERS => '0');
+        ELSE
+            d1 <= a;
+        END IF;
 
-        if c < "00000000" then
-            d3 <= (others => '0');
-        else
-            d3 <= c; 
-        end if;
+        IF signed(b) < 0 THEN
+            d2 <= (OTHERS => '0');
+        ELSE
+            d2 <= b;
+        END IF;
 
-        if d < "00000000" then
-            d4 <= (others => '0');
-        else
-            d4 <= d; 
-        end if;
+        IF signed(c) < 0 THEN
+            d3 <= (OTHERS => '0');
+        ELSE
+            d3 <= c;
+        END IF;
+
+        IF signed(d) < 0 THEN
+            d4 <= (OTHERS => '0');
+        ELSE
+            d4 <= d;
+        END IF;
 
     END PROCESS;
 END behavioral; -- behavioral

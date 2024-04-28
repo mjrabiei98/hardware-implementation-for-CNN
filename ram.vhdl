@@ -19,7 +19,7 @@ END ENTITY ram;
 ARCHITECTURE behavioral OF ram IS
     TYPE memory_array IS ARRAY (0 TO number_of_rows - 1) OF STD_LOGIC_VECTOR(DATA_WIDTH - 1 DOWNTO 0);
     SIGNAL mem : memory_array := (OTHERS => (OTHERS => '0'));
-    FILE input_file : TEXT OPEN READ_MODE IS "mem_init.txt"; -- Open the text file for reading
+    FILE input_file : TEXT OPEN READ_MODE IS "input_paterns/input1.txt"; -- Open the text file for reading
     SIGNAL init_done : STD_LOGIC := '0';
 BEGIN
     PROCESS (rst, write_en)

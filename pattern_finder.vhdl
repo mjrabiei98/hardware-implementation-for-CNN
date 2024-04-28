@@ -4,22 +4,30 @@ PACKAGE generic_array_type IS
     TYPE kernel_array IS ARRAY (0 TO 2, 0 TO 8) OF STD_LOGIC_VECTOR(7 DOWNTO 0);
     TYPE bias_array IS ARRAY (0 TO 2) OF STD_LOGIC_VECTOR(7 DOWNTO 0);
 END PACKAGE generic_array_type;
-
-
-
-
 LIBRARY IEEE;
 USE IEEE.STD_LOGIC_1164.ALL;
 USE work.generic_array_type.ALL;
-
 ENTITY patter_finder IS
     GENERIC (
         data_width : INTEGER := 8;
         number_of_conv : INTEGER := 3;
         kernel_size : INTEGER := 3;
-        kernels_array : kernel_array;
-        bias_arrays : bias_array;
-        image_size : STD_LOGIC_VECTOR(7 DOWNTO 0)
+        kernels_array : kernel_array :=
+        ((
+        "00000000", "00000001", "00000000",
+        "00000001", "00000001", "00000001",
+        "00000000", "00000001", "00000000"
+        ), (
+        "00000001", "00000001", "00000001",
+        "00000001", "00000000", "00000000",
+        "00000001", "00000001", "00000001"
+        ), (
+        "00000001", "00000001", "00000001",
+        "00000000", "00000001", "00000000",
+        "00000000", "00000001", "00000000"
+        ));
+        bias_arrays : bias_array := ("11111111", "11111110", "11111110");
+        image_size : STD_LOGIC_VECTOR(7 DOWNTO 0) := "00000100"
     );
     PORT (
         start, clk, rst, write_ram : IN STD_LOGIC;
@@ -110,7 +118,7 @@ END configurable; -- behavioral
     -- END COMPONENT conv;
 
 
-    -- after efingin component in arxhitucture body then we can configure the elements in below
+    -- after efingin component in arxhitucture body then we can configure the elements in
 
 
 
